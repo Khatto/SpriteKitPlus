@@ -226,14 +226,6 @@ extension SKScene {
         return false
     }
     
-    /// Returns the screen edge based on a specified direction
-    public func getScreenEdge(_ side: Constants.Direction) -> CGFloat? {
-        if side == .left { return leftScreenEdge }
-        else if side == .right { return rightScreenEdge }
-        return nil
-    }
-    
-    
     public func sizeProportionalToSceneWidth(currentSize: CGSize, desiredPercent: CGFloat) -> CGSize? {
         guard let sceneWidth = scene?.frame.width else { return nil }
         
