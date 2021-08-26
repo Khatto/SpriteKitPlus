@@ -95,6 +95,21 @@ extension CGRect {
 
 
 #if os(iOS)
+
+extension UIWindow {
+    static var isLandscape: Bool {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared.windows
+                .first?
+                .windowScene?
+                .interfaceOrientation
+                .isLandscape ?? false
+        } else {
+            return UIApplication.shared.statusBarOrientation.isLandscape
+        }
+    }
+}
+
 extension UIDevice {
     /// Determines if the current device has a notch
     var hasNotch: Bool {
@@ -134,10 +149,9 @@ extension SKScene {
     }
     
     // MARK: Modern, more accurate Screen-size Calculations using Area Insets (preferable for notched devices)
-    // These are for use with viewDidLayoutSubviews() in your parent UIViewController, where the
-    // safeAreaInsets should be set (they more than likely won't be ready on viewDidLoad)
-    // These will take into account the screen/scene sizing based on any notch influencing
-    // the safeAreaInsets and will work fine if no notch is present.
+    /*
+     These are for use with viewDidLayoutSubviews() in your parent UIViewController, where the safeAreaInsets should be set (they more than likely won't be ready on viewDidLoad). These will take into account the screen/scene sizing based on any notch influencing the safeAreaInsets and will work fine if no notch is present.
+     */
     
     /// Calculates the most accurate right screen edge value taking into consideration the visible scaling for the device
     /// Currently using the areaInsets.top for the smoothest display for notched phones.
@@ -150,7 +164,9 @@ extension SKScene {
     /// Currently using the areaInsets.top for the smoothest display for notched phones.  Should be less than the top.
     public func getTopScreenEdgeBasedOnBounds(with initialSize: CGSize, areaInsets: UIEdgeInsets) -> CGFloat {
         guard let topScreenEdgeBasedOnBounds = topScreenEdgeBasedOnBounds else { return 0 }
-        return topScreenEdgeBasedOnBounds * getPresentedScaleFactorY(with: initialSize.height) - (areaInsets.bottom * getPresentedScaleFactorY(with: initialSize.height))
+        /// Ensures the visual integrity of elements aligned to the edge of the screen in landscape on notched devices
+        let landscapeEdgeAlignmentModifier: CGFloat = 3
+        return topScreenEdgeBasedOnBounds * getPresentedScaleFactorY(with: initialSize.height) - (areaInsets.bottom * getPresentedScaleFactorY(with: initialSize.height)) - (UIWindow.isLandscape ? areaInsets.right - landscapeEdgeAlignmentModifier : 0)
     }
     
     /// Calculates the most accurate left screen edge value taking into consideration the visible scaling for the device
