@@ -14,21 +14,22 @@ import UIKit
 import SpriteKit
 
 extension SKAction {
+    
     /// Returns the action with the designated timingMode
-    func withTimingMode(_ timingMode: SKActionTimingMode) -> SKAction {
+    public func withTimingMode(_ timingMode: SKActionTimingMode) -> SKAction {
         self.timingMode = timingMode
         return self
     }
     
     /// Returns the action with the designated timingFunction
-    func withTimingFunction(_ timingFunction: @escaping SKActionTimingFunction) -> SKAction {
+    public func withTimingFunction(_ timingFunction: @escaping SKActionTimingFunction) -> SKAction {
         self.timingFunction = timingFunction
         return self
     }
     
     /// Repeatedly performs a fadeIn SKAction followed by a fadeOut action
     /// with .easeOut and .easeIn timingModes respectively.
-    static func fadeInFadeOutForever(duration: TimeInterval = 1.0) -> SKAction {
+    static public func fadeInFadeOutForever(duration: TimeInterval = 1.0) -> SKAction {
         return SKAction.repeatForever(SKAction.sequence([
             SKAction.fadeIn(withDuration: duration).withTimingMode(.easeOut),
             SKAction.fadeOut(withDuration: duration).withTimingMode(.easeIn),
@@ -38,8 +39,9 @@ extension SKAction {
 
 
 extension SKTextureAtlas {
+    
     /// Provides all of the textures in order from an SKTextureAtlas
-    func getAllTextures() -> [SKTexture] {
+    public func getAllTextures() -> [SKTexture] {
         var textures: [SKTexture] = []
         for name in self.textureNames.sorted(by: { $0.localizedStandardCompare($1) == .orderedAscending }) {
             textures.append(self.textureNamed(name))
@@ -48,7 +50,7 @@ extension SKTextureAtlas {
     }
     
     /// Provides all of the textures in order from an SKTextureAtlas
-    func getAllTexturesBackwards() -> [SKTexture] {
+    public func getAllTexturesBackwards() -> [SKTexture] {
         var textures: [SKTexture] = []
         for name in self.textureNames.sorted(by: { $0.localizedStandardCompare($1) == .orderedDescending }) {
             textures.append(self.textureNamed(name))
@@ -58,35 +60,37 @@ extension SKTextureAtlas {
 }
 
 extension SKSpriteNode {
+    
     /// Returns half of the width of the sprite's frame
-    var halfFrameWidth: CGFloat {
+    public var halfFrameWidth: CGFloat {
         return self.frame.width / 2.0
     }
     
     /// Returns half of the sprite's width
-    var halfWidth: CGFloat {
+    public var halfWidth: CGFloat {
         return self.size.width / 2.0
     }
     
     /// Returns half of the sprite's width
-    var halfHeight: CGFloat {
+    public var halfHeight: CGFloat {
         return self.size.height / 2.0
     }
 }
 
 extension CGRect {
+    
     /// Returns half of the width of the CGRect as a CGFloat
-    var halfWidth: CGFloat {
+    public var halfWidth: CGFloat {
         return self.width / 2.0
     }
     
     /// Returns half of the height of the CGRect as a CGFloat
-    var halfHeight: CGFloat {
+    public var halfHeight: CGFloat {
         return self.height / 2.0
     }
     
     /// Returns a random point inside the CGRect as a CGPoint
-    func randomPoint() -> CGPoint {
+    public func randomPoint() -> CGPoint {
         return CGPoint(x: CGFloat.random(in: minX...maxX), y: CGFloat.random(in: minY...maxY))
     }
 }
@@ -97,6 +101,7 @@ extension CGRect {
 #if os(iOS)
 
 extension UIWindow {
+    
     static var isLandscape: Bool {
         if #available(iOS 13.0, *) {
             return UIApplication.shared.windows
@@ -111,16 +116,18 @@ extension UIWindow {
 }
 
 extension UIDevice {
+    
     /// Determines if the current device has a notch
-    var hasNotch: Bool {
+    public var hasNotch: Bool {
         let bottom = UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0
         return bottom > 0
     }
 }
 
 public extension SKLabelNode {
+    
     /// Adds a shadow to an SKLabelNode by duplicating it and shifting the position
-    func addShadow(color: UIColor, xOffset: CGFloat = 3.0, yOffset: CGFloat = -3.0) {
+    public func addShadow(color: UIColor, xOffset: CGFloat = 3.0, yOffset: CGFloat = -3.0) {
         let shadow = SKLabelNode(text: self.text!)
         shadow.fontColor = color
         shadow.fontName = self.fontName
@@ -242,7 +249,8 @@ extension SKScene {
         return false
     }
     
-    public func sizeProportionalToSceneWidth(currentSize: CGSize, desiredPercent: CGFloat) -> CGSize? {
+    /// Returns a size that features a scale relative to the scene's width, based on the desiredPercent while preserving aspect ratio
+    public func scaleProportionalToSceneWidth(currentSize: CGSize, desiredPercent: CGFloat) -> CGSize? {
         guard let sceneWidth = scene?.frame.width else { return nil }
         
         let shrinkPercentage = (sceneWidth * desiredPercent) / currentSize.width
@@ -250,6 +258,26 @@ extension SKScene {
         let newWidth = currentSize.width * shrinkPercentage
         
         return CGSize(width: newWidth, height: newWidth * aspectRatio)
+    }
+    
+    /// Provides a size from a reference that is scaled to stretch to the size of the scene's width
+    public func sizeWithWidthScaledToSceneWidth(currentSize: CGSize) -> CGSize? {
+        guard let sceneWidth = scene?.frame.width else { return nil }
+        
+        let scale = (sceneWidth / currentSize.width)
+        let newWidth = currentSize.width * scale
+        
+        return CGSize(width: newWidth, height: currentSize.height)
+    }
+    
+    /// Provides a size from a reference that is scaled to stretch to the size of the scene's height
+    public func sizeWithHeightScaledToSceneHeight(currentSize: CGSize) -> CGSize? {
+        guard let sceneHeight = scene?.frame.height else { return nil }
+        
+        let scale = (sceneHeight / currentSize.height)
+        let newHeight = currentSize.height * scale
+        
+        return CGSize(width: currentSize.width, height: newHeight)
     }
 }
 
