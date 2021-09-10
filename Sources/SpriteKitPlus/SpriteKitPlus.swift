@@ -75,6 +75,18 @@ extension SKSpriteNode {
     public var halfHeight: CGFloat {
         return self.size.height / 2.0
     }
+    
+    /// Aligns the top of this node to the bottom of a designated node, taking into account the anchor
+    public func alignTopToBottomOfNode(node: SKNode) {
+        let nodeBottom = node.frame.minY
+        self.position.y = nodeBottom - self.anchorPoint.y * self.frame.height
+    }
+    
+    /// Aligns the bottom of this node to the top of a designated node, taking into account the anchor
+    public func alignBottomToTopOfNode(node: SKNode) {
+        let nodeTop = node.frame.maxY
+        self.position.y = nodeTop + self.anchorPoint.y * self.frame.height
+    }
 }
 
 extension CGRect {
@@ -121,6 +133,58 @@ extension UIDevice {
     public var hasNotch: Bool {
         let bottom = UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0
         return bottom > 0
+    }
+}
+
+extension UIColor {
+    
+    /// Provides a simple tuple for getting the rgba values from a UIColor
+    public var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        return (red, green, blue, alpha)
+    }
+    
+    /// Allows for initializing a UIColor with a hex string (must begin with '#')
+    public convenience init?(hex: String) {
+        let r, g, b, a: CGFloat
+
+        if hex.hasPrefix("#") {
+            let start = hex.index(hex.startIndex, offsetBy: 1)
+            let hexColor = String(hex[start...])
+
+            if hexColor.count == 8 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    a = CGFloat(hexNumber & 0x000000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            }
+        }
+
+        return nil
+    }
+    
+    /// Converts a UIColor to a hex string, including alpha
+    func toHexString() -> String {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        let rgb: Int = (Int)(r * 255) << 16 | (Int)(g * 255) << 8 | (Int)(b * 255) << 0
+        return String(format: "#%06x", rgb)
     }
 }
 
@@ -278,6 +342,26 @@ extension SKScene {
         let newHeight = currentSize.height * scale
         
         return CGSize(width: currentSize.width, height: newHeight)
+    }
+    
+    /// Provides an x and y scale from a reference that is scaled to stretch to the size of the scene's height
+    public func scaleWidthAndHeightToPercentagesOfScene(currentSize: CGSize, desiredWidthPercent: CGFloat, desiredHeightPercent: CGFloat) -> (xScale: CGFloat, yScale: CGFloat)? {
+        guard let sceneWidth = scene?.frame.width, let sceneHeight = scene?.frame.height else { return nil }
+        
+        let xScale = (sceneWidth * desiredWidthPercent / currentSize.width)
+        let yScale = (sceneHeight * desiredHeightPercent / currentSize.height)
+        
+        return (xScale: xScale, yScale: yScale)
+    }
+    
+    /// Provides a size from a reference that is scaled to stretch to the size of the scene's height
+    public func getSizeBasedOnPercentagesOfScene(currentSize: CGSize, desiredWidthPercent: CGFloat, desiredHeightPercent: CGFloat) -> CGSize? {
+        guard let sceneWidth = scene?.frame.width, let sceneHeight = scene?.frame.height else { return nil }
+        
+        let xScale = (sceneWidth * desiredWidthPercent / currentSize.width)
+        let yScale = (sceneHeight * desiredHeightPercent / currentSize.height)
+        
+        return CGSize(width: currentSize.width * xScale, height: currentSize.height * yScale)
     }
 }
 
