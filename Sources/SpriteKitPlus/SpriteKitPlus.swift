@@ -87,6 +87,28 @@ extension SKSpriteNode {
         let nodeTop = node.frame.maxY
         self.position.y = nodeTop + self.anchorPoint.y * self.frame.height
     }
+    
+    /// Aligns the right edge of this node to the left edge of a designated node, taking into account the anchor
+    public func alignRightEdgeToLeftEdgeOfNode(node: SKNode) {
+        let nodeLeft = node.frame.minX
+        self.position.x = nodeLeft - self.anchorPoint.x * self.frame.width
+    }
+    
+    /// Aligns the right edge of this node to the left edge of a designated node, taking into account the anchor
+    public func alignLeftEdgeToRightEdgeOfNode(node: SKNode) {
+        let nodeRight = node.frame.maxX
+        self.position.x = nodeRight + self.anchorPoint.x * self.frame.width
+    }
+    
+    /// Aligns the bottom edge of this node to the bottom edge of a designated node, taking into account the anchor
+    public func alignBottomEdgeToNodesBottomEdge(node: SKNode) {
+        self.position.y = node.frame.minY + self.anchorPoint.y * self.frame.height
+    }
+    
+    /// Aligns the top edge of this node to the top edge of a designated node, taking into account the anchor
+    public func alignTopEdgeToNodesTopEdge(node: SKNode) {
+        self.position.y = node.frame.maxY - self.anchorPoint.y * self.frame.height
+    }
 }
 
 extension CGRect {
@@ -168,6 +190,18 @@ extension UIColor {
                     a = CGFloat(hexNumber & 0x000000ff) / 255
 
                     self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            } else if hexColor.count == 6 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
+                    g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
+                    b = CGFloat(hexNumber & 0x0000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: 1)
                     return
                 }
             }
