@@ -129,8 +129,62 @@ extension CGRect {
     }
 }
 
-
-
+extension CGFloat {
+    /// Returns half of the current value
+    public var half: CGFloat {
+        return self / 2.0
+    }
+    
+    /// Returns 1/3 the current value
+    public var third: CGFloat {
+        return self / 3.0
+    }
+    
+    /// Returns 1/4 of the current value
+    public var quarter: CGFloat {
+        return self / 4.0
+    }
+    
+    /// Returns double the current value
+    public var double: CGFloat {
+        return self * 2.0
+    }
+    
+    /// Returns triple the current value
+    public var triple: CGFloat {
+        return self * 3.0
+    }
+    
+    /// Returns double the current value
+    public var quadruple: CGFloat {
+        return self * 4.0
+    }
+    
+    /// Returns 3/4 the current value
+    public var threeFourths: CGFloat {
+        return self * 3.0 / 4.0
+    }
+    
+    /// Returns 3/5 the current value
+    public var threeFifths: CGFloat {
+        return self * 3.0 / 5.0
+    }
+    
+    /// Returns 4/5 the current value
+    public var fourFifths: CGFloat {
+        return self * 4.0 / 5.0
+    }
+    
+    /// Returns a value of 0.0 to ensure a completely hidden alpha value
+    public var hidden: CGFloat {
+        return 0
+    }
+    
+    /// Returns a value of 1.0 to ensure a completely visible alpha value
+    public var visible: CGFloat {
+        return 1
+    }
+}
 
 #if os(iOS)
 
