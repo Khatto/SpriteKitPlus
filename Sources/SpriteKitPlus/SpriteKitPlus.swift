@@ -128,6 +128,23 @@ extension CGRect {
     }
 }
 
+extension CGPoint {
+    /// Returns the current position offset by specific values
+    public func displacedBy(dx: CGFloat, dy: CGFloat) -> CGPoint {
+        return CGPoint(x: self.x + dx, y: self.y + dy)
+    }
+    
+    /// Returns the current position offset by specific values
+    public func displacedBy(dx: Double, dy: Double) -> CGPoint {
+        return CGPoint(x: self.x + dx, y: self.y + dy)
+    }
+    
+    /// Returns the current position offset by specific values
+    public func displacedBy(dx: Int, dy: Int) -> CGPoint {
+        return CGPoint(x: Int(self.x) + dx, y: Int(self.y) + dy)
+    }
+}
+
 extension CGFloat {
     /// Returns half of the current value
     public var half: CGFloat {
